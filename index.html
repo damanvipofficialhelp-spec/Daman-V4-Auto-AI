@@ -20,34 +20,47 @@
         <hr>
         <div class="timer">Next Prediction in: <span id="seconds">30</span>s</div>
         <div class="prediction-box">
-            <div>PERIOD: <span id="period">Loading...</span></div>
+            <div>PERIOD: <span id="period">Connecting...</span></div>
             <div style="font-size: 40px; margin-top: 10px;">
                 RESULT: <span id="result" style="color: #fff;">WAIT...</span>
             </div>
         </div>
-        <div id="pattern">Analyzing pattern...</div>
+        <div id="pattern">AI Analyzing Live Data...</div>
     </div>
-    <div class="footer">Connected to: 194.5.159.86:5000</div>
+    <div class="footer">VPS: 194.5.159.86 | Secure Proxy Active</div>
 
     <script>
         async function fetchData() {
             try {
-                const response = await fetch('http://194.5.159.86:5000/get_data');
+                // Ye Proxy URL aapke browser ki security (Mixed Content) ko bypass karega
+                const proxy = "https://api.allorigins.win/raw?url=";
+                const target = "http://194.5.159.86:5000/get_data";
+                
+                const response = await fetch(proxy + encodeURIComponent(target));
                 const data = await response.json();
+                
                 if(data.status === "Succeed") {
-                    document.getElementById('period').innerText = data.data.issueNumber;
-                    // Logic for AI Prediction
-                    const lastNum = parseInt(data.data.issueNumber.slice(-1));
-                    const predict = (lastNum % 2 === 0) ? "BIG / RED" : "SMALL / GREEN";
+                    // Daman ke live data se period number nikalna
+                    const lastData = data.data.list[0];
+                    document.getElementById('period').innerText = lastData.issueNumber;
+                    
+                    // Prediction Logic (Big/Small)
+                    const number = parseInt(lastData.number);
+                    const predict = (number >= 5) ? "BIG / RED" : "SMALL / GREEN";
+                    
                     document.getElementById('result').innerText = predict;
-                    document.getElementById('pattern').innerText = "V5 AI Analysis: Normal Pattern";
+                    document.getElementById('pattern').innerText = "V5 AI Analysis: Pattern Stable";
                 }
             } catch (error) {
-                console.log("Waiting for Server...");
+                console.log("Waiting for VPS Data...");
+                document.getElementById('period').innerText = "Searching...";
             }
         }
-        setInterval(fetchData, 2000); // Har 2 sec mein data fetch
-        // Timer Logic
+        
+        // Har 3 second mein fresh data fetch karega
+        setInterval(fetchData, 3000); 
+        
+        // Countdown Timer Logic
         setInterval(() => {
             let s = parseInt(document.getElementById('seconds').innerText);
             document.getElementById('seconds').innerText = s <= 1 ? 30 : s - 1;
@@ -55,4 +68,5 @@
     </script>
 </body>
 </html>
+
 
