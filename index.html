@@ -5,62 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daman AI V5 Premium</title>
     <style>
-        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
-        .container { border: 2px solid #00ff00; border-radius: 15px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 0 20px #00ff00; }
-        .status { color: #00ff00; font-weight: bold; margin-bottom: 20px; }
-        .prediction-box { font-size: 24px; margin: 20px 0; padding: 15px; border: 1px dashed #00ff00; }
-        .timer { font-size: 18px; color: #ffcc00; }
-        .footer { font-size: 12px; margin-top: 30px; color: #888; }
+        body { background: #010101; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
+        .container { border: 2px solid #00ff00; border-radius: 15px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 0 20px #00ff00; background: rgba(0,0,0,0.8); }
+        .prediction-box { font-size: 24px; margin: 20px 0; padding: 15px; border: 1px dashed #00ff00; background: #000; }
+        .timer { font-size: 18px; color: #ffcc00; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>DAMAN AI V5</h1>
-        <div class="status">🟢 SERVER STATUS: LIVE (NETHERLANDS)</div>
-        <hr>
+        <h1 style="text-shadow: 0 0 10px #00ff00;">DAMAN AI V5</h1>
+        <div style="color: #00ff00; font-weight: bold;">🟢 SERVER: NETHERLANDS LIVE</div>
+        <hr style="border: 0.5px solid #333;">
         <div class="timer">Next Prediction in: <span id="seconds">30</span>s</div>
         <div class="prediction-box">
-            <div>PERIOD: <span id="period">Connecting...</span></div>
-            <div style="font-size: 40px; margin-top: 10px;">
-                RESULT: <span id="result" style="color: #fff;">WAIT...</span>
+            <div>PERIOD: <span id="period" style="color: #fff;">Searching...</span></div>
+            <div style="font-size: 40px; margin-top: 10px; font-weight: bold;">
+                RESULT: <span id="result" style="color: #00ff00;">WAIT...</span>
             </div>
         </div>
-        <div id="pattern">AI Analyzing Live Data...</div>
+        <div id="status" style="font-size: 14px;">Syncing with VPS...</div>
     </div>
-    <div class="footer">VPS: 194.5.159.86 | Secure Proxy Active</div>
+    <p style="font-size: 10px; color: #444; margin-top: 20px;">IP: 194.5.159.86 | HTTPS Secure Bridge Active</p>
 
     <script>
-        async function fetchData() {
+        async function getPrediction() {
             try {
-                // Ye Proxy URL aapke browser ki security (Mixed Content) ko bypass karega
-                const proxy = "https://api.allorigins.win/raw?url=";
-                const target = "https://corsproxy.io/?http://194.5.159.86:5000/get_data";
+                // Ye bridge HTTPS aur HTTP ke beech ki rukawat khatam karega
+                const vpsUrl = "http://194.5.159.86:5000/get_data";
+                const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(vpsUrl);
                 
-                const response = await fetch(proxy + encodeURIComponent(target));
-                const data = await response.json();
+                const response = await fetch(proxyUrl);
+                const bridge = await response.json();
+                const data = JSON.parse(bridge.contents);
                 
                 if(data.status === "Succeed") {
-                    // Daman ke live data se period number nikalna
-                    const lastData = data.data.list[0];
-                    document.getElementById('period').innerText = lastData.issueNumber;
+                    const lastResult = data.data.list[0];
+                    document.getElementById('period').innerText = lastResult.issueNumber;
                     
-                    // Prediction Logic (Big/Small)
-                    const number = parseInt(lastData.number);
-                    const predict = (number >= 5) ? "BIG / RED" : "SMALL / GREEN";
+                    // Smart Prediction Logic
+                    const num = parseInt(lastResult.number);
+                    const aiResult = (num >= 5) ? "BIG / RED" : "SMALL / GREEN";
                     
-                    document.getElementById('result').innerText = predict;
-                    document.getElementById('pattern').innerText = "V5 AI Analysis: Pattern Stable";
+                    document.getElementById('result').innerText = aiResult;
+                    document.getElementById('status').innerText = "AI Analysis: Successful";
                 }
-            } catch (error) {
-                console.log("Waiting for VPS Data...");
-                document.getElementById('period').innerText = "Searching...";
+            } catch (err) {
+                document.getElementById('status').innerText = "Re-connecting to VPS...";
             }
         }
-        
-        // Har 3 second mein fresh data fetch karega
-        setInterval(fetchData, 3000); 
-        
-        // Countdown Timer Logic
+
+        setInterval(getPrediction, 3000); // Har 3 sec mein check karega
         setInterval(() => {
             let s = parseInt(document.getElementById('seconds').innerText);
             document.getElementById('seconds').innerText = s <= 1 ? 30 : s - 1;
@@ -68,5 +62,4 @@
     </script>
 </body>
 </html>
-
 
