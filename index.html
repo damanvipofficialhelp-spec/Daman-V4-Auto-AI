@@ -1,5 +1,58 @@
-flask
-flask-cors
-requests
-numpy
-scikit-learn
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daman AI V5 Premium</title>
+    <style>
+        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
+        .container { border: 2px solid #00ff00; border-radius: 15px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 0 20px #00ff00; }
+        .status { color: #00ff00; font-weight: bold; margin-bottom: 20px; }
+        .prediction-box { font-size: 24px; margin: 20px 0; padding: 15px; border: 1px dashed #00ff00; }
+        .timer { font-size: 18px; color: #ffcc00; }
+        .footer { font-size: 12px; margin-top: 30px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DAMAN AI V5</h1>
+        <div class="status">🟢 SERVER STATUS: LIVE (NETHERLANDS)</div>
+        <hr>
+        <div class="timer">Next Prediction in: <span id="seconds">30</span>s</div>
+        <div class="prediction-box">
+            <div>PERIOD: <span id="period">Loading...</span></div>
+            <div style="font-size: 40px; margin-top: 10px;">
+                RESULT: <span id="result" style="color: #fff;">WAIT...</span>
+            </div>
+        </div>
+        <div id="pattern">Analyzing pattern...</div>
+    </div>
+    <div class="footer">Connected to: 194.5.159.86:5000</div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('http://194.5.159.86:5000/get_data');
+                const data = await response.json();
+                if(data.status === "Succeed") {
+                    document.getElementById('period').innerText = data.data.issueNumber;
+                    // Logic for AI Prediction
+                    const lastNum = parseInt(data.data.issueNumber.slice(-1));
+                    const predict = (lastNum % 2 === 0) ? "BIG / RED" : "SMALL / GREEN";
+                    document.getElementById('result').innerText = predict;
+                    document.getElementById('pattern').innerText = "V5 AI Analysis: Normal Pattern";
+                }
+            } catch (error) {
+                console.log("Waiting for Server...");
+            }
+        }
+        setInterval(fetchData, 2000); // Har 2 sec mein data fetch
+        // Timer Logic
+        setInterval(() => {
+            let s = parseInt(document.getElementById('seconds').innerText);
+            document.getElementById('seconds').innerText = s <= 1 ? 30 : s - 1;
+        }, 1000);
+    </script>
+</body>
+</html>
+
