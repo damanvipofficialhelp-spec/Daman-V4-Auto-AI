@@ -34,7 +34,7 @@
             try {
                 // Ye Proxy URL aapke browser ki security (Mixed Content) ko bypass karega
                 const proxy = "https://api.allorigins.win/raw?url=";
-                const target = "http://194.5.159.86:5000/get_data";
+                const target = "https://corsproxy.io/?http://194.5.159.86:5000/get_data";
                 
                 const response = await fetch(proxy + encodeURIComponent(target));
                 const data = await response.json();
